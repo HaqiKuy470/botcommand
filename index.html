@@ -91,6 +91,11 @@
   }
   .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
   .hint { color: var(--muted); font-size: .85rem; }
+  details.how { grid-column: 1 / -1; border-top: 1px dashed var(--line); padding-top: 6px; }
+  details.how summary { cursor: pointer; color: var(--accent); font-size: .85rem; padding: 2px 0; }
+  details.how ol { margin: 8px 0; padding-left: 20px; font-size: .9rem; }
+  details.how li { margin-bottom: 2px; }
+  details.how .ex { font-size: .9rem; }
   .empty { display: none; text-align: center; color: var(--muted); padding: 40px 0; }
   footer { margin-top: 40px; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 16px; }
   @media (max-width: 640px) {
@@ -225,6 +230,61 @@ const DATA = [
   ]}
 ];
 
+// Panduan per command: langkah (s) dan contoh (e). Kunci = teks command pada DATA.
+const HOW = {
+  '.menu': { s: ['Ketik .menu di chat pribadi atau grup.', 'Bot membalas daftar semua command.'], e: '.menu' },
+  '.ping': { s: ['Ketik .ping.', 'Kalau bot aktif, dibalas "Pong!".'], e: '.ping' },
+
+  '.kick @user': { s: ['Pastikan bot sudah admin grup.', 'Tag orangnya (@nama), atau reply pesannya lalu ketik .kick.', 'Admin grup tidak bisa di-kick.'], e: '.kick @Budi' },
+  '.add 628xxx': { s: ['Pakai nomor format internasional: awali 62, tanpa +, spasi, atau strip.', 'Boleh beberapa nomor, pisahkan dengan spasi.', 'Bisa gagal bila nomor itu membatasi siapa yang boleh mengundangnya.'], e: '.add 628123456789' },
+  '.promote @user': { s: ['Tag orangnya atau reply pesannya.', 'Orang itu menjadi admin grup.'], e: '.promote @Budi' },
+  '.demote @user': { s: ['Tag admin yang mau diturunkan atau reply pesannya.'], e: '.demote @Budi' },
+  '.open': { s: ['Ketik .open atau .buka.', 'Semua anggota bisa chat lagi.'], e: '.open' },
+  '.close': { s: ['Ketik .close atau .tutup.', 'Hanya admin yang bisa chat.'], e: '.close' },
+  '.setname nama': { s: ['Ketik .setname diikuti nama baru grup.'], e: '.setname Nina Store | SL 40k' },
+  '.setdesc teks': { s: ['Ketik .setdesc diikuti deskripsi baru.', 'Kosongkan teksnya untuk menghapus deskripsi.'], e: '.setdesc Dilarang spam, order via admin' },
+  '.link': { s: ['Ketik .link.', 'Bot membalas link undangan grup.'], e: '.link' },
+  '.revoke': { s: ['Ketik .revoke untuk mematikan link lama.', 'Ketik .link untuk mengambil link yang baru.'], e: '.revoke' },
+  '.del': { s: ['Reply pesan yang mau dihapus.', 'Ketik .del. Bot harus admin.'], e: '.del' },
+
+  '.tagall teks': { s: ['Ketik .tagall diikuti pengumuman.', 'Semua anggota ditandai dengan daftar yang terlihat.'], e: '.tagall Rapat jam 8 malam' },
+  '.hidetag teks': { s: ['Ketik .hidetag diikuti pesan.', 'Semua anggota dapat notifikasi tanpa daftar tag.'], e: '.hidetag Promo diskon hari ini' },
+  '.admins': { s: ['Ketik .admins.', 'Bot menandai semua admin, berguna untuk memanggil admin.'], e: '.admins' },
+
+  '.warn @user alasan': { s: ['Tag orangnya atau reply pesannya.', 'Tambahkan alasan setelahnya.', 'Bot menghitung peringatan (1x, 2x, ...). Tidak ada auto-kick.'], e: '.warn @Budi spam link' },
+  '.resetwarn @user': { s: ['Tag orangnya atau reply pesannya untuk mengosongkan peringatannya.'], e: '.resetwarn @Budi' },
+  '.antilink on': { s: ['Ketik .antilink on untuk mengaktifkan, .antilink off untuk mematikan.', 'Link dari non-admin dihapus. Bot harus admin.', 'Ketik .antilink saja untuk melihat status.'], e: '.antilink on' },
+  '.antitoxic on': { s: ['Ketik .antitoxic on atau off.', 'Pesan berisi kata kasar dihapus dan pengirim di-warn.'], e: '.antitoxic on' },
+  '.mute on': { s: ['Ketik .mute on, bot mengabaikan pesan non-admin.', 'Ketik .mute off untuk kembali normal.'], e: '.mute on' },
+  '.welcome on': { s: ['Ketik .welcome on atau off.', 'Mengatur pesan sambutan dan perpisahan saat anggota masuk atau keluar.'], e: '.welcome on' },
+  '.setwelcome teks': { s: ['Ketik .setwelcome diikuti teks.', 'Pakai @user untuk nama anggota dan @group untuk nama grup.'], e: '.setwelcome Halo @user, selamat datang di @group!' },
+  '.setleave teks': { s: ['Sama seperti .setwelcome, tapi untuk anggota yang keluar.'], e: '.setleave Sampai jumpa @user' },
+
+  '.list': { s: ['Ketik .list.', 'Bot menampilkan nama semua list di grup.', 'Ketik nama list tanpa titik untuk melihat isinya.'], e: '.list' },
+  '.addlist nama | isi': { s: ['Format: .addlist nama | isi. Nama di kiri tanda |, isi di kanan.', 'Isi boleh banyak baris. Paste dari generator di atas agar rapi.', 'Atau reply sebuah teks dengan .addlist nama.', 'Mengirim ulang dengan nama sama menimpa list lama.'], e: '.addlist mlbb | 5 DM = Rp 2.383' },
+  '.dellist nama': { s: ['Ketik .dellist diikuti nama list.'], e: '.dellist mlbb' },
+  'nama list': { s: ['Ketik nama list saja, tanpa titik di depan.', 'Bot membalas isinya.'], e: 'mlbb' },
+  '.setpay teks': { s: ['Ketik .setpay diikuti info pembayaran, boleh banyak baris.', 'Atau reply teks yang sudah ada dengan .setpay.'], e: '.setpay DANA 0812xxxx a.n Nama' },
+  '.pay': { s: ['Ketik .pay.', 'Bot menampilkan info pembayaran yang diatur lewat .setpay.'], e: '.pay' },
+  '.setrules teks': { s: ['Ketik .setrules diikuti rules, boleh banyak baris.'], e: '.setrules 1. Dilarang spam 2. Dilarang kirim link' },
+  '.rules': { s: ['Ketik .rules untuk menampilkan rules grup.'], e: '.rules' },
+  '.proses': { s: ['Reply pesan pesanan pembeli.', 'Ketik .proses, boleh ditambah catatan.', 'Bot mengirim status pesanan dengan tag pembeli.'], e: '.proses tunggu 5 menit ya' },
+  '.done': { s: ['Setelah pembayaran dan pesanan selesai, reply pesanan pembeli.', 'Ketik .done, boleh ditambah catatan.'], e: '.done terima kasih' },
+  '.batal': { s: ['Reply pesanan pembeli yang dibatalkan.', 'Ketik .batal, boleh ditambah alasan.'], e: '.batal stok habis' },
+  '.bc teks': { s: ['Hanya owner. Ketik .bc diikuti pengumuman.', 'Bot mengirim ke semua grup dengan jeda 2 detik.', 'Pakai seperlunya, berisiko banned.'], e: '.bc Promo akhir bulan diskon 10%' },
+
+  '.ai pertanyaan': { s: ['Ketik .ai diikuti pertanyaan.', 'Bot membalas jawabannya.'], e: '.ai apa itu bailey?' },
+  '.tt link': { s: ['Salin link video TikTok.', 'Ketik .tt lalu tempel link.', 'Gunakan link biasa (tiktok.com/@user/video/...). Link pendek kadang gagal.'], e: '.tt https://www.tiktok.com/@user/video/123' },
+  '.ig link': { s: ['Salin link postingan atau reel Instagram.', 'Ketik .ig lalu tempel link.', 'Akun privat tidak bisa diunduh.'], e: '.ig https://www.instagram.com/p/xxxx/' },
+  '.ytmp3 link': { s: ['Salin link video YouTube.', 'Ketik .ytmp3 (atau .play) lalu tempel link.', 'Bot mengirim audionya.'], e: '.ytmp3 https://youtu.be/xxxx' },
+  '.ytmp4 link': { s: ['Salin link video YouTube.', 'Ketik .ytmp4 lalu tempel link.', 'Video panjang atau besar bisa gagal terkirim.'], e: '.ytmp4 https://youtu.be/xxxx' },
+  '.spotify link': { s: ['Salin link lagu dari Spotify (open.spotify.com/track/...).', 'Ketik .spotify lalu tempel link.'], e: '.spotify https://open.spotify.com/track/xxxx' },
+
+  '.s': { s: ['Kirim gambar, video, atau GIF dengan caption .s.', 'Atau reply media yang sudah ada dengan .s.', 'Video maksimal 15 detik.'], e: '.s' },
+  '.gif': { s: ['Kirim video dengan caption .gif, atau reply video dengan .gif.', 'Video maksimal 30 detik. Suara dihilangkan.'], e: '.gif' },
+  '.toimg': { s: ['Reply stiker biasa dengan .toimg.', 'Stiker animasi belum didukung.'], e: '.toimg' }
+};
+
 const list = document.getElementById('list');
 const chips = document.getElementById('chips');
 const empty = document.getElementById('empty');
@@ -262,6 +322,18 @@ function render() {
         setTimeout(() => (btn.textContent = 'Salin'), 1200);
       });
       row.append(left, el('div', 'desc', x.d), btn);
+      const how = HOW[x.c];
+      if (how) {
+        const det = el('details', 'how');
+        det.append(el('summary', '', 'Cara pakai'));
+        const ol = el('ol');
+        how.s.forEach(t => ol.append(el('li', '', t)));
+        det.append(ol);
+        const ex = el('div', 'ex');
+        ex.append(el('span', 'hint', 'Contoh: '), el('code', '', how.e));
+        det.append(ex);
+        row.append(det);
+      }
       sec.append(row);
       shown++;
     }
