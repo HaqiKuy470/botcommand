@@ -70,6 +70,27 @@
     display: inline-block; font-size: .72rem; border-radius: 999px; padding: 1px 8px; margin-left: 6px;
     background: var(--accent-soft); color: var(--accent); vertical-align: middle;
   }
+  details.guide {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 4px 16px; margin-top: 8px;
+  }
+  details.guide summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+  details.guide h3 { margin: 18px 0 6px; font-size: 1rem; }
+  details.guide ol { margin: 0 0 8px; padding-left: 20px; }
+  details.guide li { margin-bottom: 4px; }
+  .field { display: block; margin: 10px 0 4px; font-size: .85rem; color: var(--muted); }
+  .guide input[type="text"], .guide textarea {
+    width: 100%; padding: 10px 12px; font: inherit; color: var(--text);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  }
+  .guide textarea { min-height: 150px; resize: vertical; }
+  .guide input:focus, .guide textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  pre.out {
+    background: var(--code); border-radius: 8px; padding: 12px; margin: 8px 0;
+    white-space: pre-wrap; word-break: break-word; font: .85rem ui-monospace, Consolas, monospace;
+  }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .hint { color: var(--muted); font-size: .85rem; }
   .empty { display: none; text-align: center; color: var(--muted); padding: 40px 0; }
   footer { margin-top: 40px; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 16px; }
   @media (max-width: 640px) {
@@ -93,6 +114,44 @@
     <input id="q" type="search" placeholder="Cari command, contoh: kick, tiktok, stiker…" autocomplete="off" aria-label="Cari command">
     <div class="chips" id="chips"></div>
   </div>
+
+  <details class="guide" id="guide">
+    <summary>Cara menambah list toko</summary>
+
+    <h3>Langkah</h3>
+    <ol>
+      <li>Masukkan bot ke grup dan jadikan admin. Kamu juga harus admin grup atau owner.</li>
+      <li>Isi form di bawah, lalu klik <b>Salin command</b>.</li>
+      <li>Tempel (paste) ke chat grup lalu kirim. Paste menjaga baris baru, jadi list tetap rapi.</li>
+      <li>Ketik nama list tanpa titik, misalnya <code>mlbb</code>, dan bot membalas isinya.</li>
+    </ol>
+
+    <h3>Buat command</h3>
+    <label class="field" for="gname">Nama list (tanpa spasi, tanpa titik di depan)</label>
+    <input type="text" id="gname" value="mlbb" autocomplete="off" spellcheck="false">
+    <label class="field" for="gbody">Isi list (boleh banyak baris, format WhatsApp: *tebal* _miring_ ~coret~)</label>
+    <textarea id="gbody" spellcheck="false">✨ *PRICELIST DIAMOND MLBB* ✨
+
+🔹 5 DM = Rp 2.383
+🔹 12 DM = Rp 4.254
+🔹 19 DM = Rp 6.086
+🔹 28 DM = Rp 8.445
+
+📌 Ketik *pay* untuk metode pembayaran
+📌 Order: kirim ID + Server</textarea>
+    <pre class="out" id="gout" aria-live="polite"></pre>
+    <div class="row">
+      <button class="copy" id="gcopy" type="button">Salin command</button>
+      <span class="hint" id="gwarn"></span>
+    </div>
+
+    <h3>Cara lain</h3>
+    <ul>
+      <li>Reply sebuah teks dengan <code>.addlist nama</code>, tanpa perlu mengetik ulang isinya.</li>
+      <li>Ubah isi list: kirim ulang <code>.addlist nama | isi baru</code>, list lama otomatis tertimpa.</li>
+      <li>Hapus list: <code>.dellist nama</code>. Lihat semua list: <code>.list</code>.</li>
+    </ul>
+  </details>
 
   <main id="list"></main>
   <p class="empty" id="empty">Tidak ada command yang cocok.</p>
@@ -223,6 +282,32 @@ function renderChips() {
 }
 
 q.addEventListener('input', render);
+
+// Generator command .addlist
+const gname = document.getElementById('gname');
+const gbody = document.getElementById('gbody');
+const gout = document.getElementById('gout');
+const gwarn = document.getElementById('gwarn');
+const gcopy = document.getElementById('gcopy');
+
+function genCmd() {
+  const name = gname.value.trim().toLowerCase().replace(/\s+/g, '');
+  return '.addlist ' + (name || 'nama') + ' | ' + gbody.value.trim();
+}
+function updateGen() {
+  gout.textContent = genCmd();
+  const name = gname.value.trim();
+  gwarn.textContent = name.startsWith('.') ? 'Nama list tidak boleh diawali titik.'
+    : /\s/.test(name) ? 'Spasi pada nama akan dihapus.' : '';
+}
+gname.addEventListener('input', updateGen);
+gbody.addEventListener('input', updateGen);
+gcopy.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(genCmd()); gcopy.textContent = 'Tersalin'; }
+  catch { gcopy.textContent = 'Gagal, salin manual'; }
+  setTimeout(() => (gcopy.textContent = 'Salin command'), 1400);
+});
+updateGen();
 
 // Tema manual (disimpan bila localStorage tersedia)
 const root = document.documentElement;
