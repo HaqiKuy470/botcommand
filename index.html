@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nayang Bot Command</title>
+<meta name="description" content="Daftar lengkap command bot WhatsApp Nayang: admin grup, moderasi, downloader, AI, stiker dan GIF.">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #16191d; --muted: #5f6b76;
+    --line: #e2e6ea; --accent: #128c5a; --accent-soft: #e3f5ec; --code: #eef1f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1418; --card: #171e24; --text: #e8edf1; --muted: #93a1ad;
+      --line: #263039; --accent: #3ddc97; --accent-soft: #15332a; --code: #212b33;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1418; --card: #171e24; --text: #e8edf1; --muted: #93a1ad;
+    --line: #263039; --accent: #3ddc97; --accent-soft: #15332a; --code: #212b33;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 64px; }
+  header { padding: 40px 0 20px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  h1 { margin: 0 0 4px; font-size: 1.9rem; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--muted); }
+  .theme {
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 8px; padding: 8px 12px; cursor: pointer; font: inherit; font-size: .9rem;
+  }
+  .tools { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; }
+  #q {
+    width: 100%; padding: 12px 14px; font: inherit; color: var(--text);
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  }
+  #q:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 999px; padding: 5px 12px; font: inherit; font-size: .85rem; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip[aria-pressed="true"] { color: #07140e; } }
+  :root[data-theme="dark"] .chip[aria-pressed="true"] { color: #07140e; }
+  section { margin-top: 28px; }
+  section h2 { font-size: 1.15rem; margin: 0 0 4px; }
+  section .note { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
+  .cmd {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 8px;
+    display: grid; grid-template-columns: minmax(150px, 230px) 1fr auto; gap: 8px 16px; align-items: center;
+  }
+  code {
+    background: var(--code); border-radius: 6px; padding: 3px 8px;
+    font: .9rem ui-monospace, SFMono-Regular, Consolas, monospace; word-break: break-word;
+  }
+  .desc { color: var(--text); font-size: .95rem; }
+  .alias { display: block; color: var(--muted); font-size: .8rem; margin-top: 2px; }
+  .copy {
+    border: 1px solid var(--line); background: transparent; color: var(--muted);
+    border-radius: 8px; padding: 5px 10px; cursor: pointer; font: inherit; font-size: .8rem;
+  }
+  .copy:hover { color: var(--accent); border-color: var(--accent); }
+  .tag {
+    display: inline-block; font-size: .72rem; border-radius: 999px; padding: 1px 8px; margin-left: 6px;
+    background: var(--accent-soft); color: var(--accent); vertical-align: middle;
+  }
+  .empty { display: none; text-align: center; color: var(--muted); padding: 40px 0; }
+  footer { margin-top: 40px; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 640px) {
+    .cmd { grid-template-columns: 1fr; }
+    .copy { justify-self: start; }
+    header { padding-top: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Nayang Bot</h1>
+      <p>Daftar command bot WhatsApp · prefix <code>.</code></p>
+    </div>
+    <button class="theme" id="theme" type="button" aria-label="Ganti tema">Tema</button>
+  </header>
+
+  <div class="tools">
+    <input id="q" type="search" placeholder="Cari command, contoh: kick, tiktok, stiker…" autocomplete="off" aria-label="Cari command">
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <main id="list"></main>
+  <p class="empty" id="empty">Tidak ada command yang cocok.</p>
+
+  <footer>
+    Perintah admin hanya bisa dipakai oleh admin grup atau owner, dan bot harus dijadikan admin grup.
+    Klik tombol "Salin" untuk menyalin contoh perintah.
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  { id: 'umum', title: 'Umum', note: 'Bisa dipakai semua orang.', cmds: [
+    { c: '.menu', alias: '.help', d: 'Menampilkan daftar menu bot.' },
+    { c: '.ping', d: 'Cek bot aktif, dibalas "Pong!".' }
+  ]},
+  { id: 'admin', title: 'Admin Grup', note: 'Bot harus admin. Pengirim harus admin grup atau owner.', cmds: [
+    { c: '.kick @user', d: 'Mengeluarkan anggota lewat tag, reply, atau nomor. Admin tidak bisa di-kick.' },
+    { c: '.add 628xxx', d: 'Menambahkan anggota lewat nomor.' },
+    { c: '.promote @user', d: 'Menjadikan anggota sebagai admin.' },
+    { c: '.demote @user', d: 'Menurunkan admin menjadi anggota biasa.' },
+    { c: '.open', alias: '.buka', d: 'Membuka grup, semua anggota boleh chat.' },
+    { c: '.close', alias: '.tutup', d: 'Menutup grup, hanya admin yang boleh chat.' },
+    { c: '.setname nama', d: 'Mengganti nama grup.' },
+    { c: '.setdesc teks', d: 'Mengganti deskripsi grup.' },
+    { c: '.link', d: 'Menampilkan link undangan grup.' },
+    { c: '.revoke', d: 'Mereset link undangan grup.' },
+    { c: '.del', alias: '.delete', d: 'Menghapus pesan. Reply pesan yang mau dihapus.' }
+  ]},
+  { id: 'tag', title: 'Tag', note: 'Admin atau owner, kecuali .admins.', cmds: [
+    { c: '.tagall teks', d: 'Menandai semua anggota dengan daftar yang terlihat.' },
+    { c: '.hidetag teks', alias: '.h', d: 'Menandai semua anggota tanpa menampilkan daftar.' },
+    { c: '.admins', alias: '.listadmin', d: 'Menampilkan dan menandai semua admin. Semua anggota boleh pakai.' }
+  ]},
+  { id: 'moderasi', title: 'Moderasi', note: 'Admin atau owner. Untuk antilink dan antitoxic, bot harus admin agar bisa menghapus pesan.', cmds: [
+    { c: '.warn @user alasan', d: 'Memberi peringatan dengan hitungan. Tidak ada auto-kick.' },
+    { c: '.resetwarn @user', d: 'Mereset peringatan anggota.' },
+    { c: '.antilink on', alias: 'on / off', d: 'Menghapus pesan berisi link dari non-admin.' },
+    { c: '.antitoxic on', alias: 'on / off', d: 'Menghapus kata kasar dan memberi warn otomatis.' },
+    { c: '.mute on', alias: 'on / off', d: 'Bot mengabaikan pesan non-admin di grup.' },
+    { c: '.welcome on', alias: 'on / off', d: 'Mengaktifkan pesan sambutan dan perpisahan.' },
+    { c: '.setwelcome teks', d: 'Mengubah pesan sambutan. Pakai @user dan @group.' },
+    { c: '.setleave teks', d: 'Mengubah pesan perpisahan. Pakai @user dan @group.' }
+  ]},
+  { id: 'downloader', title: 'Downloader dan AI', note: 'Bisa dipakai semua anggota.', cmds: [
+    { c: '.ai pertanyaan', alias: '.nayang', d: 'Bertanya ke AI.' },
+    { c: '.tt link', alias: '.tiktok', d: 'Download video TikTok.' },
+    { c: '.ig link', alias: '.instagram', d: 'Download foto atau video Instagram.' },
+    { c: '.ytmp3 link', alias: '.play', d: 'Download audio YouTube.' },
+    { c: '.ytmp4 link', d: 'Download video YouTube.' },
+    { c: '.spotify link', d: 'Download lagu Spotify.' }
+  ]},
+  { id: 'stiker', title: 'Stiker dan GIF', note: 'Kirim media dengan caption command, atau reply media dengan command.', cmds: [
+    { c: '.s', alias: '.sticker', d: 'Gambar menjadi stiker. Video atau GIF (maksimal 15 detik) menjadi stiker animasi.' },
+    { c: '.gif', alias: '.togif', d: 'Video (maksimal 30 detik) menjadi GIF.' },
+    { c: '.toimg', d: 'Reply stiker biasa untuk dijadikan gambar. Stiker animasi belum didukung.' }
+  ]}
+];
+
+const list = document.getElementById('list');
+const chips = document.getElementById('chips');
+const empty = document.getElementById('empty');
+const q = document.getElementById('q');
+let active = 'semua';
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text) e.textContent = text;
+  return e;
+}
+
+function render() {
+  const term = q.value.trim().toLowerCase();
+  list.replaceChildren();
+  let shown = 0;
+  for (const s of DATA) {
+    if (active !== 'semua' && active !== s.id) continue;
+    const rows = s.cmds.filter(x =>
+      !term || (x.c + ' ' + (x.alias || '') + ' ' + x.d).toLowerCase().includes(term));
+    if (!rows.length) continue;
+    const sec = el('section');
+    sec.append(el('h2', '', s.title), el('p', 'note', s.note));
+    for (const x of rows) {
+      const row = el('div', 'cmd');
+      const left = el('div');
+      left.append(el('code', '', x.c));
+      if (x.alias) left.append(el('span', 'alias', 'alias: ' + x.alias));
+      const btn = el('button', 'copy', 'Salin');
+      btn.type = 'button';
+      btn.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(x.c); btn.textContent = 'Tersalin'; }
+        catch { btn.textContent = 'Gagal'; }
+        setTimeout(() => (btn.textContent = 'Salin'), 1200);
+      });
+      row.append(left, el('div', 'desc', x.d), btn);
+      sec.append(row);
+      shown++;
+    }
+    list.append(sec);
+  }
+  empty.style.display = shown ? 'none' : 'block';
+}
+
+function renderChips() {
+  chips.replaceChildren();
+  for (const [id, label] of [['semua', 'Semua'], ...DATA.map(s => [s.id, s.title])]) {
+    const b = el('button', 'chip', label);
+    b.type = 'button';
+    b.setAttribute('aria-pressed', String(id === active));
+    b.addEventListener('click', () => { active = id; renderChips(); render(); });
+    chips.append(b);
+  }
+}
+
+q.addEventListener('input', render);
+
+// Tema manual (disimpan bila localStorage tersedia)
+const root = document.documentElement;
+try { const t = localStorage.getItem('theme'); if (t) root.dataset.theme = t; } catch {}
+document.getElementById('theme').addEventListener('click', () => {
+  const dark = root.dataset.theme
+    ? root.dataset.theme === 'dark'
+    : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+});
+
+renderChips();
+render();
+</script>
+</body>
+</html>
