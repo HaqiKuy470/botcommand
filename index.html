@@ -137,6 +137,20 @@ const DATA = [
     { c: '.setwelcome teks', d: 'Mengubah pesan sambutan. Pakai @user dan @group.' },
     { c: '.setleave teks', d: 'Mengubah pesan perpisahan. Pakai @user dan @group.' }
   ]},
+  { id: 'toko', title: 'Toko / Bisnis', note: 'List, pembayaran, dan status pesanan. Setiap grup punya data sendiri.', cmds: [
+    { c: '.list', alias: '.pricelist', d: 'Menampilkan daftar semua list toko di grup. Semua anggota boleh pakai.' },
+    { c: '.addlist nama | isi', d: 'Admin: menyimpan list (price list, katalog). Atau reply teks lalu ketik .addlist nama.' },
+    { c: '.dellist nama', d: 'Admin: menghapus list.' },
+    { c: 'nama list', alias: 'tanpa prefix', d: 'Ketik nama list (misalnya mlbb) dan bot membalas isinya. Semua anggota boleh pakai.' },
+    { c: '.setpay teks', d: 'Admin: mengatur info pembayaran (DANA, QRIS, dan sebagainya).' },
+    { c: '.pay', alias: '.payment, .bayar', d: 'Menampilkan info pembayaran.' },
+    { c: '.setrules teks', d: 'Admin: mengatur rules grup.' },
+    { c: '.rules', d: 'Menampilkan rules grup.' },
+    { c: '.proses', d: 'Admin: reply pesanan pembeli, bot mengirim status "Pesanan Diproses". Bisa tambah catatan.' },
+    { c: '.done', d: 'Admin: reply pesanan pembeli, bot mengirim status "Transaksi Berhasil". Bisa tambah catatan.' },
+    { c: '.batal', d: 'Admin: reply pesanan pembeli, bot mengirim status "Pesanan Dibatalkan".' },
+    { c: '.bc teks', alias: '.broadcast', d: 'Owner: kirim pengumuman ke semua grup tempat bot ada. Pakai seperlunya, berisiko banned.' }
+  ]},
   { id: 'downloader', title: 'Downloader dan AI', note: 'Bisa dipakai semua anggota.', cmds: [
     { c: '.ai pertanyaan', alias: '.nayang', d: 'Bertanya ke AI.' },
     { c: '.tt link', alias: '.tiktok', d: 'Download video TikTok.' },
